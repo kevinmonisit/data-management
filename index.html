@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access SQLite</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+        #data {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Patient Data Lookup</h1>
+        <div class="input-group">
+            <input type="number" id="patientId" placeholder="Enter Patient ID">
+            <button onclick="fetchPatientData()">Fetch Data</button>
+        </div>
+        <div id="data"></div>
+    </div>
+
+    <script>
+        function fetchPatientData() {
+            const patientId = document.getElementById('patientId').value;
+            const dataContainer = document.getElementById('data');
+
+            // Clear previous data
+            dataContainer.innerHTML = '';
+
+            if (!patientId) {
+                dataContainer.textContent = 'Please enter a valid Patient ID.';
+                return;
+            }
+
+            fetch(`http://127.0.0.1:5055/get-patient/${patientId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Patient not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        dataContainer.textContent = data.error;
+                        return;
+                    }
+                    const patientInfo = document.createElement('div');
+                    patientInfo.innerHTML = `<h2>Here is the information of Patient ${patientId}:</h2>`;
+                    dataContainer.appendChild(patientInfo);
+
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `
+                            <p><strong>Diabetes:</strong> ${item.Diabetes_binary}</p>
+                            <p><strong>HighBP:</strong> ${item.HighBP}</p>
+                            <p><strong>HighChol:</strong> ${item.HighChol}</p>
+                            <p><strong>CholCheck:</strong> ${item.CholCheck}</p>
+                            <p><strong>BMI:</strong> ${item.BMI}</p>
+                            <p><strong>Smoker:</strong> ${item.Smoker}</p>
+                            <p><strong>Stroke:</strong> ${item.Stroke}</p>
+                            <p><strong>Heart Disease or Attack:</strong> ${item.HeartDiseaseorAttack}</p>
+                            <p><strong>Physical Activity:</strong> ${item.PhysActivity}</p>
+                            <p><strong>Fruits:</strong> ${item.Fruits}</p>
+                            <p><strong>Veggies:</strong> ${item.Veggies}</p>
+                            <p><strong>Heavy Alcohol Consumption:</strong> ${item.HvyAlcoholConsump}</p>
+                            <p><strong>Any Healthcare:</strong> ${item.AnyHealthcare}</p>
+                            <p><strong>Couldn’t See Doctor Because of Cost:</strong> ${item.NoDocbcCost}</p>
+                            <p><strong>General Health:</strong> ${item.GenHlth}</p>
+                            <p><strong>Mental Health Days:</strong> ${item.MentHlth}</p>
+                            <p><strong>Physical Health Days:</strong> ${item.PhysHlth}</p>
+                            <p><strong>Difficulty Walking:</strong> ${item.DiffWalk}</p>
+                            <p><strong>Sex:</strong> ${item.Sex}</p>
+                            <p><strong>Age:</strong> ${item.Age}</p>
+                            <p><strong>Education:</strong> ${item.Education}</p>
+                            <p><strong>Income:</strong> ${item.Income}</p>
+                        `;
+                        dataContainer.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    dataContainer.textContent = error.message;
+                });
+        }
+    </script>
+</body>
+</html>
