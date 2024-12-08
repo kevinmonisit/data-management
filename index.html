@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access SQLite</title>
+    <title>Patient Data</title>
     <style>
         body {
             display: flex;
@@ -392,7 +392,14 @@
                 .then(response => response.json())
                 .then(result => {
                   document.getElementById('formResponse').textContent = ``;
-                    document.getElementById('formResponse').textContent = `Predicted Probability: ${result.probability}`;
+                    if (result.probability === 0) {
+                        document.getElementById('predictionResponse').textContent = 'Patient is not likely to have diabetes.';
+                    } else if (result.probability === 1) {
+                        document.getElementById('predictionResponse').textContent = 'Patient is likely to have diabetes.';
+                    } else {
+                        //say there was an error
+                        document.getElementById('predictionResponse').textContent = 'Error predicting probability.';
+                    }
                 })
                 .catch(error => {
                     document.getElementById('formResponse').textContent = 'Error predicting probability: ' + error.message;

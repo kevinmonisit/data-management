@@ -38,7 +38,6 @@ cursor.execute("DROP TABLE IF EXISTS DiabetesData;")
 cursor.execute(create_table_query)
 con.commit()
 
-
 def add(data_entry, cursor):
     cursor.execute(
         "INSERT INTO DiabetesData (Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, Veggies, HvyAlcoholConsump, AnyHealthcare, NoDocbcCost, GenHlth, MentHlth, PhysHlth, DiffWalk, Sex, Age, Education, Income) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

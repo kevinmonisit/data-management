@@ -106,19 +106,15 @@ def predict():
     # Convert input data into a DataFrame
     input_df = pd.DataFrame([input_data], columns=required_fields)
     print(input_df)
-    # Ensure numeric columns are properly converted
     input_df = input_df.astype(float)
 
-    # Scale specific columns
     cols_to_scale = ['BMI', 'GenHlth', 'MentHlth', 'PhysHlth', 'Age', 'Education', 'Income']
     input_df[cols_to_scale] = scaler.transform(input_df[cols_to_scale])
 
-    # Prepare data for prediction
     scaled_features = input_df.to_numpy()  # Convert DataFrame to NumPy array
 
     # Predict probability
     guess = model.predict(scaled_features)
-    print(guess)
-    return jsonify({"probability": 1})
+    return jsonify({"probability": guess[0]})
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5055, debug=True)
