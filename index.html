@@ -20,7 +20,8 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            width: 90%;
+            max-width: 1200px;
         }
         .container h1 {
             margin-bottom: 20px;
@@ -53,17 +54,32 @@
             display: block;
         }
         .input-group {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .input-group div {
+            flex: 1 1 calc(33.333% - 40px);
+            min-width: 200px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
         }
         .input-group input {
+            width: 100%;
             padding: 10px;
             font-size: 16px;
-            width: calc(100% - 24px);
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-bottom: 10px;
         }
-        .input-group button {
+        .action-buttons {
+            margin-top: 20px;
+        }
+        .action-buttons button {
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
@@ -71,11 +87,12 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin: 5px;
         }
-        .input-group button:hover {
+        .action-buttons button:hover {
             background-color: #0056b3;
         }
-        #data {
+        #data, #formResponse, #predictionResponse {
             margin-top: 20px;
         }
     </style>
@@ -85,7 +102,7 @@
         <h1>Patient Data</h1>
         <div class="tab-buttons">
             <button id="lookup-tab" class="active" onclick="switchTab('lookup')">Patient Lookup</button>
-            <button id="form-tab" onclick="switchTab('form')">Submit Data</button>
+            <button id="form-tab" onclick="switchTab('form')">Submit Data / Predict</button>
         </div>
         <div id="lookup" class="tab-content active">
             <div class="input-group">
@@ -96,31 +113,109 @@
         </div>
         <div id="form" class="tab-content">
             <div class="input-group">
-                <input type="number" id="patientIdInput" placeholder="Patient ID">
-                <input type="number" id="diabetesBinary" placeholder="Diabetes (0=no, 1=pre, 2=yes)">
-                <input type="number" id="highBP" placeholder="HighBP (0=no, 1=yes)">
-                <input type="number" id="highChol" placeholder="High Cholesterol (0=no, 1=yes)">
-                <input type="number" id="cholCheck" placeholder="CholCheck (0=no, 1=yes)">
-                <input type="number" id="bmi" placeholder="BMI">
-                <input type="number" id="smoker" placeholder="Smoker (0=no, 1=yes)">
-                <input type="number" id="stroke" placeholder="Stroke (0=no, 1=yes)">
-                <input type="number" id="heartDiseaseOrAttack" placeholder="Heart Disease/Attack (0=no, 1=yes)">
-                <input type="number" id="physActivity" placeholder="Physical Activity (0=no, 1=yes)">
-                <input type="number" id="fruits" placeholder="Fruits (0=no, 1=yes)">
-                <input type="number" id="veggies" placeholder="Veggies (0=no, 1=yes)">
-                <input type="number" id="hvyAlcoholConsump" placeholder="Heavy Alcohol Consumption (0=no, 1=yes)">
-                <input type="number" id="anyHealthcare" placeholder="Any Healthcare (0=no, 1=yes)">
-                <input type="number" id="noDocbcCost" placeholder="Couldn’t See Doctor Because of Cost (0=no, 1=yes)">
-                <input type="number" id="genHlth" placeholder="General Health (1-5)">
-                <input type="number" id="mentHlth" placeholder="Mental Health Days (1-30)">
-                <input type="number" id="physHlth" placeholder="Physical Health Days (1-30)">
-                <input type="number" id="diffWalk" placeholder="Difficulty Walking (0=no, 1=yes)">
-                <input type="number" id="sex" placeholder="Sex (0=female, 1=male)">
-                <input type="number" id="age" placeholder="Age Group (1-13)">
-                <input type="number" id="education" placeholder="Education Level (1-6)">
-                <input type="number" id="income" placeholder="Income Level (1-8)">
-                <button onclick="submitPatientData()">Submit Data</button>
-                <button onclick="predictProbability()">Predict</button>
+                <div>
+                    <label>Mode:</label>
+                    <div>
+                        <label><input type="radio" name="mode" value="add" checked onchange="toggleMode()"> Add Patient</label>
+                        <label><input type="radio" name="mode" value="predict" onchange="toggleMode()"> Predict Diabetes</label>
+                    </div>
+                </div>
+                <div id="patientIdField">
+                    <label for="patientIdInput">Patient ID</label>
+                    <input type="number" id="patientIdInput" placeholder="Enter Patient ID">
+                </div>
+                <div id="diabetesField">
+                    <label for="diabetesBinary">Diabetes</label>
+                    <input type="number" id="diabetesBinary" placeholder="0=no, 1=pre, 2=yes">
+                </div>
+                <div>
+                    <label for="highBP">High Blood Pressure</label>
+                    <input type="number" id="highBP" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="highChol">High Cholesterol</label>
+                    <input type="number" id="highChol" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="cholCheck">Cholesterol Check</label>
+                    <input type="number" id="cholCheck" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="bmi">BMI</label>
+                    <input type="number" id="bmi" placeholder="Enter BMI">
+                </div>
+                <div>
+                    <label for="smoker">Smoker</label>
+                    <input type="number" id="smoker" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="stroke">Stroke</label>
+                    <input type="number" id="stroke" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="heartDiseaseOrAttack">Heart Disease or Attack</label>
+                    <input type="number" id="heartDiseaseOrAttack" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="physActivity">Physical Activity</label>
+                    <input type="number" id="physActivity" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="fruits">Fruits</label>
+                    <input type="number" id="fruits" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="veggies">Veggies</label>
+                    <input type="number" id="veggies" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="hvyAlcoholConsump">Heavy Alcohol Consumption</label>
+                    <input type="number" id="hvyAlcoholConsump" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="anyHealthcare">Any Healthcare</label>
+                    <input type="number" id="anyHealthcare" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="noDocbcCost">Couldn’t See Doctor Due to Cost</label>
+                    <input type="number" id="noDocbcCost" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="genHlth">General Health</label>
+                    <input type="number" id="genHlth" placeholder="1-5">
+                </div>
+                <div>
+                    <label for="mentHlth">Mental Health Days</label>
+                    <input type="number" id="mentHlth" placeholder="1-30">
+                </div>
+                <div>
+                    <label for="physHlth">Physical Health Days</label>
+                    <input type="number" id="physHlth" placeholder="1-30">
+                </div>
+                <div>
+                    <label for="diffWalk">Difficulty Walking</label>
+                    <input type="number" id="diffWalk" placeholder="0=no, 1=yes">
+                </div>
+                <div>
+                    <label for="sex">Sex</label>
+                    <input type="number" id="sex" placeholder="0=female, 1=male">
+                </div>
+                <div>
+                    <label for="age">Age Group</label>
+                    <input type="number" id="age" placeholder="1-13">
+                </div>
+                <div>
+                    <label for="education">Education Level</label>
+                    <input type="number" id="education" placeholder="1-6">
+                </div>
+                <div>
+                    <label for="income">Income Level</label>
+                    <input type="number" id="income" placeholder="1-8">
+                </div>
+            </div>
+            <div class="action-buttons">
+              <button id="submitDataButton" onclick="submitPatientData()" style="display: block;">Submit Data</button>
+              <button id="predictButton" onclick="predictProbability()" style="display: none;">Predict</button>
             </div>
             <div id="formResponse"></div>
             <div id="predictionResponse"></div>
@@ -139,11 +234,27 @@
             document.getElementById(`${tab}-tab`).classList.add('active');
         }
 
+        function toggleMode() {
+          const mode = document.querySelector('input[name="mode"]:checked').value;
+          const submitButton = document.getElementById('submitDataButton');
+          const predictButton = document.getElementById('predictButton');
+
+          if (mode === 'add') {
+              submitButton.style.display = 'block';
+              predictButton.style.display = 'none';
+          } else {
+              submitButton.style.display = 'none';
+              predictButton.style.display = 'block';
+          }
+
+          document.getElementById('patientIdField').style.display = mode === 'add' ? 'block' : 'none';
+          document.getElementById('diabetesField').style.display = mode === 'add' ? 'block' : 'none';
+       }
+
         function fetchPatientData() {
             const patientId = document.getElementById('patientId').value;
             const dataContainer = document.getElementById('data');
 
-            // Clear previous data
             dataContainer.innerHTML = '';
 
             if (!patientId) {
@@ -228,7 +339,7 @@
                 Income: document.getElementById('income').value
             };
 
-            fetch('http://127.0.0.1:5055/submit-data', {
+            fetch('http://127.0.0.1:5055/add-patient', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -247,7 +358,6 @@
         function predictProbability() {
             const data = {
                 PatientID: document.getElementById('patientIdInput').value,
-                Diabetes_binary: document.getElementById('diabetesBinary').value,
                 HighBP: document.getElementById('highBP').value,
                 HighChol: document.getElementById('highChol').value,
                 CholCheck: document.getElementById('cholCheck').value,
@@ -286,6 +396,9 @@
                     document.getElementById('predictionResponse').textContent = 'Error predicting probability: ' + error.message;
                 });
         }
+
+        // Initialize the mode toggle visibility
+        toggleMode();
     </script>
 </body>
 </html>
