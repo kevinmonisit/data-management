@@ -348,7 +348,8 @@
             })
                 .then(response => response.json())
                 .then(result => {
-                    document.getElementById('formResponse').textContent = 'Data submitted successfully!';
+                  document.getElementById('formResponse').textContent = '';
+                  document.getElementById('formResponse').textContent = 'Data submitted successfully!';
                 })
                 .catch(error => {
                     document.getElementById('formResponse').textContent = 'Error submitting data: ' + error.message;
@@ -390,10 +391,11 @@
             })
                 .then(response => response.json())
                 .then(result => {
-                    document.getElementById('predictionResponse').textContent = `Predicted Probability: ${result.probability}`;
+                  document.getElementById('formResponse').textContent = ``;
+                    document.getElementById('formResponse').textContent = `Predicted Probability: ${result.probability}`;
                 })
                 .catch(error => {
-                    document.getElementById('predictionResponse').textContent = 'Error predicting probability: ' + error.message;
+                    document.getElementById('formResponse').textContent = 'Error predicting probability: ' + error.message;
                 });
         }
 
