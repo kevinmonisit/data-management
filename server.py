@@ -91,7 +91,6 @@ def get_patient(patient_id):
 @cross_origin(supports_credentials=True)
 def predict():
     input_data = request.json
-
     required_fields = [
         "HighBP", "HighChol", "CholCheck", "BMI", "Smoker",
         "Stroke", "HeartDiseaseorAttack", "PhysActivity", "Fruits", "Veggies",
@@ -99,9 +98,7 @@ def predict():
         "MentHlth", "PhysHlth", "DiffWalk", "Sex", "Age", "Education", "Income"
     ]
 
-    print(input_data)
     input_df = pd.DataFrame([input_data], columns=required_fields)
-    print(input_df)
     input_df = input_df.astype(float)
 
     cols_to_scale = ['BMI', 'GenHlth', 'MentHlth', 'PhysHlth', 'Age', 'Education', 'Income']
