@@ -9,10 +9,8 @@ from pickle import load
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# Initialize the scaler
 scaler = StandardScaler()
 
-# Assuming these were the columns scaled during training
 cols_to_scale = ['BMI', 'GenHlth', 'MentHlth', 'PhysHlth', 'Age', 'Education', 'Income']
 
 with open("model.pkl", "rb") as f:
@@ -34,7 +32,7 @@ def add_patient():
         "MentHlth", "PhysHlth", "DiffWalk", "Sex", "Age", "Education", "Income"
     ]
 
-    # Ensure all required fields are present
+
     for field in required_fields:
         if field not in input_data:
             return jsonify({"error": f"Missing field: {field}"}), 400
@@ -62,11 +60,10 @@ def add_patient():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Endpoint to fetch data
 @app.route('/get-data', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def get_data():
-    connection = sqlite3.connect('./tutorial.db')  # Path to your SQLite database
+    connection = sqlite3.connect('./tutorial.db')
     cursor = connection.cursor()
 
     cursor.execute('SELECT * FROM DiabetesData')
@@ -103,7 +100,6 @@ def predict():
     ]
 
     print(input_data)
-    # Convert input data into a DataFrame
     input_df = pd.DataFrame([input_data], columns=required_fields)
     print(input_df)
     input_df = input_df.astype(float)
@@ -111,9 +107,8 @@ def predict():
     cols_to_scale = ['BMI', 'GenHlth', 'MentHlth', 'PhysHlth', 'Age', 'Education', 'Income']
     input_df[cols_to_scale] = scaler.transform(input_df[cols_to_scale])
 
-    scaled_features = input_df.to_numpy()  # Convert DataFrame to NumPy array
+    scaled_features = input_df.to_numpy()
 
-    # Predict probability
     guess = model.predict(scaled_features)
     return jsonify({"probability": guess[0]})
 if __name__ == '__main__':
